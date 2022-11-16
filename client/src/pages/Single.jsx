@@ -1,59 +1,79 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
-import Edit from '../img/edit.png'
-import Delete from '../img/delete.png'
-import Menu from '../components/Menu';
+import React, { useEffect, useState } from "react";
+import Edit from "../img/edit.png";
+import Delete from "../img/delete.png";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Menu from "../components/Menu";
+import axios from "axios";
+import moment from "moment";
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
+import DOMPurify from "dompurify";
 
 const Single = () => {
+  const [post, setPost] = useState([]);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const postId = location.pathname.split("/")[2];
+
+  const { currentUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`/posts/${postId}`);
+        setPost(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [postId]);
+
+  const handleDelete = async ()=>{
+    try {
+      await axios.delete(`/posts/${postId}`);
+      navigate("/")
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const getText = (html) =>{
+    const doc = new DOMParser().parseFromString(html, "text/html")
+    return doc.body.textContent
+  }
+
   return (
-    <div className='single'>
+    <div className="single">
       <div className="content">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuub1qqprhrAi5nC5Yol6grcv1y4xblegZKA&usqp=CAU" alt="" />
+        <img src={`../upload/${post?.img}`} alt="" />
         <div className="user">
-          <img src="https://www.pngkey.com/png/detail/52-523516_empty-profile-picture-circle.png" alt="" />
+          {post.userImg && <img
+            src={post.userImg}
+            alt=""
+          />}
           <div className="info">
-            <span>John</span>
-            <p>Posted 2 days ago</p>
+            <span>{post.username}</span>
+            <p>Posted {moment(post.date).fromNow()}</p>
           </div>
-          <div className="edit">
-            <Link to={`/write?edit=2`}>
-              <img src={Edit} alt="" />
-            </Link>           
-            <img src={Delete} alt="" />
-          </div>
-        </div>  
-        <h1>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</h1>      
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates, aperiam eveniet expedita, eos illum debitis, 
-          ipsam amet rem laboriosam nesciunt ducimus! Pariatur laborum accusamus, 
-          ratione ex provident aperiam beatae expedita. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet deserunt 
-          dolore blanditiis ab, iusto eos molestiae error ratione, maxime dignissimos perferendis nostrum 
-          repudiandae nesciunt aspernatur non impedit, laudantium rem a! Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Quam, praesentium architecto. Officia, exercitationem fugiat.
-          <br />
-          <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis, 
-          officia perferendis quasi quos et nulla atque unde sequi aut quae qui 
-          dolore quia vel voluptate expedita, totam voluptatibus ea. Vel. Lorem ipsum dolor sit amet 
-          consectetur adipisicing elit. Dolorum iure vero 
-          voluptas eveniet ad excepturi sed iste, placeat recusandae error, 
-          corrupti tempore explicabo dicta architecto veniam illo fugit soluta enim. Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
-          Iste dignissimos nihil reiciendis saepe asperiores 
-          optio beatae ducimus assumenda nam laboriosam repellendus magni 
-          fugiat animi minus, soluta quo! Libero, consequatur magnam!
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />
-          <br />
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis, 
-          officia perferendis quasi quos et nulla atque unde sequi aut quae qui 
-          dolore quia vel voluptate expedita, totam voluptatibus ea. Vel. Lorem ipsum dolor sit amet 
-          consectetur adipisicing elit. Dolorum iure vero 
-          voluptas eveniet ad excepturi sed iste, placeat recusandae error, 
-          corrupti tempore explicabo dicta architecto veniam illo fugit soluta enim. Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
-          Iste dignissimos nihil reiciendis saepe asperiores.
-        </p>
-      </div>      
-      <Menu/>
+          {currentUser.username === post.username && (
+            <div className="edit">
+              <Link to={`/write?edit=2`} state={post}>
+                <img src={Edit} alt="" />
+              </Link>
+              <img onClick={handleDelete} src={Delete} alt="" />
+            </div>
+          )}
+        </div>
+        <h1>{post.title}</h1>
+        <p
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(post.desc),
+          }}
+        ></p>      </div>
+      <Menu cat={post.cat}/>
     </div>
   );
 };
