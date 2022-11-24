@@ -21,11 +21,11 @@ $lightPink : #fb506e;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: $lightGreen;
+            background-color: $lightPink;
 
             h1{
                 font-size: 20px;
-                color: teal;
+                color: $lightPink;
                 margin-bottom: 20px;
             }
 
@@ -46,7 +46,7 @@ $lightPink : #fb506e;
                 button{
                     padding: 10px;
                     border: none;
-                    background-color: teal;
+                    background-color: $lightPink;
                     cursor: pointer;
                     color: white;
                 }
@@ -106,7 +106,7 @@ $lightPink : #fb506e;
                         font-weight: 300;
                         border: 1px solid white;
 
-                        &:hover{
+                        &:hover {
                             color: #fb506e;
                             background-color: white;
                             border: 1px solid #fb506e;
@@ -128,8 +128,9 @@ $lightPink : #fb506e;
             font-size: 12px;
 
             img{
-                height: 50px;
+                height: 26.8px;
             }
+
         }
 
         // HOME

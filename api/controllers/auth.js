@@ -37,7 +37,7 @@ export const login = (req, res) => {
     const isPasswordCorrect = bcrypt.compareSync(
       req.body.password,
       data[0].password
-    );
+    ); 
 
     if (!isPasswordCorrect)
       return res.status(400).json("Wrong username or password!");
@@ -60,4 +60,4 @@ export const logout = (req, res) => {
       sameSite:"none",
       secure:true
     }).status(200).json("User has been logged out.")
-};
+ };
