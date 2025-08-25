@@ -10,7 +10,7 @@ import { AuthContext } from "../context/authContext";
 import DOMPurify from "dompurify";
 
 const Single = () => {
-  const [post, setPost] = useState([]);
+  const [post, setPost] = useState({});
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ const Single = () => {
             <span>{post.username}</span>
             <p>Posted {moment(post.date).fromNow()}</p>
           </div>
-          {currentUser.username === post.username && (
+          {currentUser?.username === post.username && (
             <div className="edit">
               <Link to={`/write?edit=2`} state={post}>
                 <img src={Edit} alt="" />
@@ -72,10 +72,11 @@ const Single = () => {
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(post.desc),
           }}
-        ></p>      </div>
-      <Menu cat={post.cat}/>
+        ></p>
+      </div>
+      <Menu cat={post.cat} />
     </div>
   );
 };
 
-export default Single
+export default Single;
